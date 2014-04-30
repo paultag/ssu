@@ -1,9 +1,10 @@
 #
 
 import csv
-from pupa.scrape.popolo import Person
+from pupa.scrape.popolo import Person, Organization
 
-def people_to_pupa(stream):
+
+def people_to_pupa(stream, org):
     for row in csv.DictReader(stream):
 
         # XXX: Validate the row better.
@@ -15,6 +16,8 @@ def people_to_pupa(stream):
             raise ValueError("A district is required for each entry.")
 
         obj = Person(name=row.get("Name"))
+        # XXX: org add post -> district
+        # XXX: org add membership -> person
 
         for key, keys in [
             ("email", ("Email 1", "Email 2", "Email 3")),
@@ -26,3 +29,9 @@ def people_to_pupa(stream):
                 if value:
                     obj.add_contact_detail(type=key, value=value, note=k)
         yield obj
+
+
+def import_csv(stream, jurisdiction_id, organization_name):
+    org = Organization(name=organization_name)
+    yield org
+    yield from people_to_pupa(stream, org)

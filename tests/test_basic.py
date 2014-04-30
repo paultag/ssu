@@ -1,9 +1,13 @@
 #
 
-from ssu.parser import people_to_pupa
+from pupa.scrape.popolo import Person
+from ssu.parser import import_csv
 from contextlib import contextmanager
 import os
 import csv
+
+jid = "ocd-jurisdiction/country:xx/state:yy/place:foo"
+oname = "Foo City"
 
 
 @contextmanager
@@ -13,9 +17,16 @@ def load_resource(name):
         yield fd
 
 
+def icsv(test, *args, **kwargs):
+    for el in import_csv(*args, **kwargs):
+        if isinstance(el, test):
+            yield el
+
+
 def test_john_conversion():
     with load_resource("testdata.csv") as fd:
-        john = next(people_to_pupa(fd))
+        people_stream = icsv(Person, fd, jid, oname)
+        john = next(people_stream)
 
     obj = john.as_dict()
     assert obj['name'] == "John Q. Public"
@@ -33,7 +44,7 @@ def test_john_conversion():
 
 def test_people_name_stream():
     with load_resource("testdata.csv") as fd:
-        people_stream = people_to_pupa(fd)
+        people_stream = icsv(Person, fd, jid, oname)
         with load_resource("testdata.csv") as fd:
             csv_stream = csv.DictReader(fd)
 
@@ -43,7 +54,7 @@ def test_people_name_stream():
 
 def test_bad_people_stream():
     with load_resource("noname.csv") as fd:
-        people_stream = people_to_pupa(fd)
+        people_stream = icsv(Person, fd, jid, oname)
         good = next(people_stream)
 
         try:
@@ -52,9 +63,10 @@ def test_bad_people_stream():
         except ValueError as e:
             assert (str(e)) == "A name is required for each entry."
 
+
 def test_bad_district_stream():
     with load_resource("nodistrict.csv") as fd:
-        people_stream = people_to_pupa(fd)
+        people_stream = icsv(Person, fd, jid, oname)
         good = next(people_stream)
 
         try:
