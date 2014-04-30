@@ -5,7 +5,14 @@ from pupa.scrape.popolo import Person
 
 def people_to_pupa(stream):
     for row in csv.DictReader(stream):
-        # XXX: Validate the row.
+
+        # XXX: Validate the row better.
+
+        if not row.get("Name", "").strip():
+            raise ValueError("A name is required for each entry.")
+
+        if not row.get("District", "").strip():
+            raise ValueError("A district is required for each entry.")
 
         obj = Person(name=row.get("Name"))
 

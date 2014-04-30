@@ -39,3 +39,26 @@ def test_people_name_stream():
 
             for person, row in zip(people_stream, csv_stream):
                 assert person.name == row['Name']
+
+
+def test_bad_people_stream():
+    with load_resource("noname.csv") as fd:
+        people_stream = people_to_pupa(fd)
+        good = next(people_stream)
+
+        try:
+            assert False == next(people_stream), ("No assertion error was "
+                "raised by people_to_pupa given a blank name.")
+        except ValueError as e:
+            assert (str(e)) == "A name is required for each entry."
+
+def test_bad_district_stream():
+    with load_resource("nodistrict.csv") as fd:
+        people_stream = people_to_pupa(fd)
+        good = next(people_stream)
+
+        try:
+            assert False == next(people_stream), ("No assertion error was "
+                "raised by people_to_pupa given a blank district.")
+        except ValueError as e:
+            assert (str(e)) == "A district is required for each entry."
