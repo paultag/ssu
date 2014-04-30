@@ -32,6 +32,6 @@ def people_to_pupa(stream, org):
 
 
 def import_csv(stream, jurisdiction_id, organization_name):
-    org = Organization(name=organization_name)
+    org = Organization(name=organization_name, jurisdiction_id=jurisdiction_id)
     yield org
     yield from people_to_pupa(stream, org)

@@ -1,6 +1,6 @@
 #
 
-from pupa.scrape.popolo import Person
+from pupa.scrape.popolo import Person, Organization
 from ssu.parser import import_csv
 from contextlib import contextmanager
 import os
@@ -21,6 +21,14 @@ def icsv(test, *args, **kwargs):
     for el in import_csv(*args, **kwargs):
         if isinstance(el, test):
             yield el
+
+
+def test_org_conversion():
+    with load_resource("testdata.csv") as fd:
+        org_stream = icsv(Organization, fd, jid, oname)
+        o = next(org_stream)
+        assert o.name == oname
+        assert o.jurisdiction_id == jid
 
 
 def test_john_conversion():
