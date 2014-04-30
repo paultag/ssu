@@ -17,7 +17,5 @@ def people_to_pupa(stream):
             for k in keys:
                 value = row.get(k)
                 if value:
-                    obj.add_contact_detail(type=key,
-                                          value=value,
-                                          note=k)
+                    obj.add_contact_detail(type=key, value=value, note=k)
         yield obj
