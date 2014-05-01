@@ -48,7 +48,7 @@ def test_john_conversion():
                        'note': 'Address 1', 'type': 'address'}
 
     assert phone == {'value': '781-555-5555', 'note': 'Phone 1',
-                     'type': 'phone'}
+                     'type': 'voice'}
 
 
 def test_people_name_stream():

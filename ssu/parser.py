@@ -4,6 +4,9 @@ import csv
 from pupa.scrape.popolo import Person, Organization
 
 
+OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
+
+
 def people_to_pupa(stream, org):
     for row in csv.DictReader(stream):
 
@@ -26,13 +29,14 @@ def people_to_pupa(stream, org):
         for key, keys in [
             ("email", ("Email 1", "Email 2", "Email 3")),
             ("address", ("Address 1", "Address 2", "Address 3")),
-            ("phone", ("Phone 1", "Phone 2", "Phone 3")),
+            ("voice", ("Phone 1", "Phone 2", "Phone 3")),
         ]:
             for k in keys:
                 value = row.get(k)
                 if value:
                     obj.add_contact_detail(type=key, value=value, note=k)
 
+        obj.add_source(url=OCD_SOURCE_URL)
         obj.validate()
         yield obj
 
@@ -42,6 +46,7 @@ def import_csv(stream, jurisdiction_id, organization_name):
         name=organization_name,
         classification='legislature'
     )  # , jurisdiction_id=jurisdiction_id)
+    org.add_source(url=OCD_SOURCE_URL)
     # XXX: Re-add Jurisdiction ID
 
     yield org
