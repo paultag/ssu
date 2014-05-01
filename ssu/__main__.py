@@ -1,6 +1,7 @@
 # Convert a CSV.
 
 import sys
+import django
 
 from ssu.parser import import_csv
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
@@ -44,6 +45,8 @@ def _do_import(fd, org, jurisdiction_id):
 
 
 if __name__ == "__main__":
+    django.setup()
+
     if len(sys.argv) != 2:
         print("Error: Need a csv file path to import")
         sys.exit(1)
