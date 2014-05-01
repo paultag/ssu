@@ -21,8 +21,6 @@ def people_to_pupa(stream, org):
             raise ValueError("A district is required for each entry.")
 
         obj = Person(name=name)
-        # XXX: org add post -> district
-        # XXX: org add membership -> person
         org.add_post(label=district, role="member")
         obj.add_membership(org, role="member", post_id=district)
 
