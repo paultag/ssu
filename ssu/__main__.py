@@ -3,16 +3,14 @@
 import sys
 
 from ssu.parser import import_csv
+from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
 
 
 def _do_import(fd, org, jurisdiction_id):
     stream = import_csv(fd, org, jurisdiction_id)
-
-    stream = [x.as_dict() for x in stream]
-    # We have to be aggressive here so that we
-    # can double-back on the stream for each importer.
+    stream = list(stream)
 
     juris_importer = JurisdictionImporter(jurisdiction_id)
     org_importer = OrganizationImporter(jurisdiction_id)
@@ -28,11 +26,21 @@ def _do_import(fd, org, jurisdiction_id):
     report = {}
     # This basically relates to Pupa's pupa.clu.commands.update:113
     # (From there - wrap this in a transaction.)
-    report.update(juris_importer.import_iterator(stream))
-    report.update(org_importer.import_iterator(stream))
-    report.update(person_importer.import_iterator(stream))
-    report.update(post_importer.import_iterator(stream))
-    report.update(membership_importer.import_iterator(stream))
+
+    def tfilter(otype, stream):
+        for el in filter(lambda x: isinstance(x, otype), stream):
+            yield el.as_dict()
+
+
+    report.update(juris_importer.import_iterator(tfilter(Jurisdiction, stream)))
+    report.update(org_importer.import_iterator(tfilter(Organization, stream)))
+    report.update(person_importer.import_iterator(tfilter(Person, stream)))
+    report.update(post_importer.import_iterator(tfilter(Post, stream)))
+
+    report.update(membership_importer.import_iterator(
+        tfilter(Membership, stream)))
+
+    return report
 
 
 if __name__ == "__main__":
