@@ -28,7 +28,8 @@ def test_org_conversion():
         org_stream = icsv(Organization, fd, jid, oname)
         o = next(org_stream)
         assert o.name == oname
-        assert o.jurisdiction_id == jid
+        # assert o.jurisdiction_id == jid
+        # XXX: Re-enable when we set JIDs again
 
 
 def test_john_conversion():
