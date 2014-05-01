@@ -32,6 +32,8 @@ def people_to_pupa(stream, org):
                 value = row.get(k)
                 if value:
                     obj.add_contact_detail(type=key, value=value, note=k)
+
+        obj.validate()
         yield obj
 
 
