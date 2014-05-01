@@ -8,16 +8,20 @@ def people_to_pupa(stream, org):
     for row in csv.DictReader(stream):
 
         # XXX: Validate the row better.
+        name = row.get("Name", "").strip()
+        district = row.get("District", "").strip()
 
-        if not row.get("Name", "").strip():
+        if not name:
             raise ValueError("A name is required for each entry.")
 
-        if not row.get("District", "").strip():
+        if not district:
             raise ValueError("A district is required for each entry.")
 
-        obj = Person(name=row.get("Name"))
+        obj = Person(name=name)
         # XXX: org add post -> district
         # XXX: org add membership -> person
+        org.add_post(label=district, role="member")
+        obj.add_membership(org, role="member", post_id=district)
 
         for key, keys in [
             ("email", ("Email 1", "Email 2", "Email 3")),
