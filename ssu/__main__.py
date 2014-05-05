@@ -33,12 +33,12 @@ def _do_import(fd, org, jurisdiction_id):
             yield el.as_dict()
 
 
-    report.update(juris_importer.import_iterator(tfilter(Jurisdiction, stream)))
-    report.update(org_importer.import_iterator(tfilter(Organization, stream)))
-    report.update(person_importer.import_iterator(tfilter(Person, stream)))
-    report.update(post_importer.import_iterator(tfilter(Post, stream)))
+    report.update(juris_importer.import_data(tfilter(Jurisdiction, stream)))
+    report.update(org_importer.import_data(tfilter(Organization, stream)))
+    report.update(person_importer.import_data(tfilter(Person, stream)))
+    report.update(post_importer.import_data(tfilter(Post, stream)))
 
-    report.update(membership_importer.import_iterator(
+    report.update(membership_importer.import_data(
         tfilter(Membership, stream)))
 
     return report
