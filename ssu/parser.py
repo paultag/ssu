@@ -1,7 +1,7 @@
 #
 
 import csv
-from pupa.scrape.popolo import Person, Organization
+from pupa.scrape.popolo import Person, Organization, Membership
 
 
 OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
@@ -36,7 +36,12 @@ def people_to_pupa(stream, org):
 
         obj.add_source(url=OCD_SOURCE_URL)
         obj.validate()
+
         yield obj
+
+        for related in obj._related:
+            yield related
+
 
 
 def import_csv(stream, jurisdiction_id, organization_name):
@@ -47,5 +52,5 @@ def import_csv(stream, jurisdiction_id, organization_name):
     org.add_source(url=OCD_SOURCE_URL)
     # XXX: Re-add Jurisdiction ID
 
-    yield org
     yield from people_to_pupa(stream, org)
+    yield org
