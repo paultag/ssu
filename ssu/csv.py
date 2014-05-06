@@ -42,6 +42,9 @@ def people_to_pupa(stream, org):
         for related in obj._related:
             yield related
 
+    for related in org._related:
+        yield related
+
 
 
 def import_csv(stream, jurisdiction_id, organization_name):
