@@ -2,7 +2,7 @@
 
 import sys
 import django
-from ssu.parser import import_stream
+from ssu.parser import import_file_stream
 
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,

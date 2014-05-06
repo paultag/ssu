@@ -65,7 +65,7 @@ def import_stream(stream, extension, name, jurisdiction):
     return import_parsed_stream(reader(stream), name, jurisdiction)
 
 
-def import_file_stream(stream, name, jurisdiction):
+def import_file_stream(fpath, name, jurisdiction):
     _, xtn = fpath.rsplit(".", 1)
 
     with open(fpath, 'br') as fd:
