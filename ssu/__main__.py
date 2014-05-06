@@ -9,8 +9,7 @@ from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
 
 
-def _do_import(reader, fd, org, jurisdiction_id):
-    stream = reader(fd, org, jurisdiction_id)
+def _do_import(stream, org, jurisdiction_id):
     stream = list(stream)
 
     juris_importer = JurisdictionImporter(jurisdiction_id)
@@ -52,8 +51,13 @@ if __name__ == "__main__":
         sys.exit(1)
 
     _, fpath = sys.argv
-    import_file_stream(
+    with import_file_stream(
         fpath,
         "Test Jurisdiction",
         "ocd-jurisdiction/country:xx/council"
-    )
+    ) as stream:
+        _do_import(
+            stream,
+            "Test Jurisdiction",
+            "ocd-jurisdiction/country:xx/council"
+        )
