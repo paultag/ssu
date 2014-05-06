@@ -2,7 +2,7 @@
 
 import sys
 import django
-from ssu.parser import load_file
+from ssu.parser import import_stream
 
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,
@@ -52,4 +52,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     _, fpath = sys.argv
-    load_file(fpath, "Test Jurisdiction", "ocd-jurisdiction/country:xx/council")
+    import_file_stream(
+        fpath,
+        "Test Jurisdiction",
+        "ocd-jurisdiction/country:xx/council"
+    )

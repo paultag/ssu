@@ -1,5 +1,7 @@
+import csv
 from ssu.xlrd import xlrd_dict_reader
-from ssu.csv import csv_dict_reader
+
+from pupa.scrape.popolo import Person, Organization
 
 
 OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
@@ -44,7 +46,7 @@ def people_to_pupa(stream, org):
         yield related
 
 
-def import_stream(stream, jurisdiction_id, organization_name):
+def import_parsed_stream(stream, jurisdiction_id, organization_name):
     org = Organization(
         name=organization_name,
         classification='legislature'
@@ -56,10 +58,15 @@ def import_stream(stream, jurisdiction_id, organization_name):
     yield org
 
 
-def load_file(fpath, name, jurisdiction):
-    _, xtn = fpath.rsplit(".", 1)
+def import_stream(stream, extension, name, jurisdiction):
     reader = {"csv": csv.DictReader,
-              "xls": xlrd_dict_reader}[xtn]
+              "xls": xlrd_dict_reader}[extension]
+
+    return import_parsed_stream(reader(stream), name, jurisdiction)
+
+
+def import_file_stream(stream, name, jurisdiction):
+    _, xtn = fpath.rsplit(".", 1)
 
     with open(fpath, 'br') as fd:
-        return import_stream(reader(fd), name, jurisdiction)
+        return import_stream(fd, xtn, name, jurisdiction)

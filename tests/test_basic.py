@@ -1,7 +1,7 @@
 #
 
 from pupa.scrape.popolo import Person, Organization
-from ssu.parser import import_csv
+from ssu.parser import import_stream
 from contextlib import contextmanager
 import os
 import csv
@@ -18,7 +18,10 @@ def load_resource(name):
 
 
 def icsv(test, *args, **kwargs):
-    for el in import_csv(*args, **kwargs):
+    args = list(args)
+    args.insert(1, "csv")
+
+    for el in import_stream(*args, **kwargs):
         if isinstance(el, test):
             yield el
 
