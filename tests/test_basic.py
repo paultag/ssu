@@ -1,6 +1,6 @@
 #
 
-from pupa.scrape.popolo import Person, Organization
+from pupa.scrape.popolo import Organization, Person
 from ssu.parser import import_stream
 from contextlib import contextmanager
 import os
@@ -13,7 +13,7 @@ oname = "Foo City"
 @contextmanager
 def load_resource(name):
     with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
-            "resources", name)) as fd:
+            "resources", name), 'rb') as fd:
         yield fd
 
 
@@ -58,7 +58,7 @@ def test_people_name_stream():
     with load_resource("testdata.csv") as fd:
         people_stream = icsv(Person, fd, jid, oname)
         with load_resource("testdata.csv") as fd:
-            csv_stream = csv.DictReader(fd)
+            csv_stream = csv.DictReader((x.decode('utf-8') for x in fd))
 
             for person, row in zip(people_stream, csv_stream):
                 assert person.name == row['Name']

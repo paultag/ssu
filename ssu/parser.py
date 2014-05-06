@@ -3,7 +3,8 @@ from ssu.xlrd import xlrd_dict_reader
 from ssu.csv import csv_dict_reader
 
 from contextlib import contextmanager
-from pupa.scrape.popolo import Person, Organization
+from pupa.scrape.helpers import Legislator
+from pupa.scrape.popolo import Organization
 
 
 OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
@@ -21,9 +22,8 @@ def people_to_pupa(stream, org):
         if not district:
             raise ValueError("A district is required for each entry.")
 
-        obj = Person(name=name)
+        obj = Legislator(name=name, district=district)
         org.add_post(label=district, role="member")
-        obj.add_membership(org, role="member", post_id=district)
 
         for key, keys in [
             ("email", ("Email 1", "Email 2", "Email 3")),
