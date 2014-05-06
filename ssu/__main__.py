@@ -2,9 +2,8 @@
 
 import sys
 import django
+from ssu.parser import load_file
 
-from ssu.csv import import_csv
-from ssu.xlrd import import_xls
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
@@ -53,15 +52,4 @@ if __name__ == "__main__":
         sys.exit(1)
 
     _, fpath = sys.argv
-
-    _, xtn = fpath.rsplit(".", 1)
-    reader = {"csv": import_csv,
-              "xls": import_xls}[xtn]
-
-    with open(fpath, 'br') as fd:
-        print(_do_import(
-            reader,
-            fd,
-            "Test Jurisdiction",
-            "ocd-jurisdiction/country:xx/council"
-        ))
+    load_file(fpath, "Test Jurisdiction", "ocd-jurisdiction/country:xx/council")

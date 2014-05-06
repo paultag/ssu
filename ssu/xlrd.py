@@ -16,19 +16,3 @@ def xlrd_dict_reader(stream):
     for row in rows:
         yield dict(zip([x.value for x in header],
                        [x.value for x in row]))
-
-
-def people_to_pupa(stream, org):
-    for row in xlrd_dict_reader(stream):
-        print(row)
-
-
-def import_xls(stream, jurisdiction_id, organization_name):
-    org = Organization(
-        name=organization_name,
-        classification='legislature'
-    )
-    org.add_source(url=OCD_SOURCE_URL)
-
-    yield from people_to_pupa(stream, org)
-    yield org
