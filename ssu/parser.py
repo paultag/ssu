@@ -58,7 +58,7 @@ def import_stream(stream, jurisdiction_id, organization_name):
 
 def load_file(fpath, name, jurisdiction):
     _, xtn = fpath.rsplit(".", 1)
-    reader = {"csv": csv_dict_reader,
+    reader = {"csv": csv.DictReader,
               "xls": xlrd_dict_reader}[xtn]
 
     with open(fpath, 'br') as fd:
