@@ -26,6 +26,15 @@ def icsv(test, *args, **kwargs):
             yield el
 
 
+def ixls(test, *args, **kwargs):
+    args = list(args)
+    args.insert(1, "xls")
+
+    for el in import_stream(*args, **kwargs):
+        if isinstance(el, test):
+            yield el
+
+
 def test_org_conversion():
     with load_resource("testdata.csv") as fd:
         org_stream = icsv(Organization, fd, jid, oname)
@@ -52,6 +61,20 @@ def test_john_conversion():
 
     assert phone == {'value': '781-555-5555', 'note': 'Phone 1',
                      'type': 'voice'}
+
+
+def test_john_conversion():
+    with load_resource("testdata.xls") as fd:
+        people_stream = ixls(Person, fd, jid, oname)
+        john = next(people_stream)
+
+    obj = john.as_dict()
+    assert obj['name'] == "John Quincy Adams"
+    address, = obj['contact_details']
+    # No phone or email. Duh.
+
+    assert address == {'value': 'Quincy MA, 02169',
+                       'note': 'Address 1', 'type': 'address'}
 
 
 def test_people_name_stream():
