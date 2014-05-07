@@ -65,6 +65,7 @@ def import_parsed_stream(stream, jurisdiction_id, organization_name):
 
 def import_stream(stream, extension, name, jurisdiction):
     reader = {"csv": csv_dict_reader,
+              "xlsx": xlrd_dict_reader,
               "xls": xlrd_dict_reader}[extension]
 
     return import_parsed_stream(reader(stream), name, jurisdiction)

@@ -122,5 +122,4 @@ def test_people_membership_stream():
     with load_resource("testdata.csv") as fd:
         membership_stream = icsv(Membership, fd, jid, oname)
         membership = next(membership_stream)
-
         assert membership.post_id == "district::Ward 20", "Bad Post relation"
