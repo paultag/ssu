@@ -1,7 +1,12 @@
 # Convert a CSV.
 
+import os
 import sys
+
 import django
+import dj_database_url
+from django.conf import settings
+
 from ssu.parser import import_file_stream
 
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
@@ -44,6 +49,10 @@ def _do_import(stream, org, jurisdiction_id):
 
 
 if __name__ == "__main__":
+    settings.DATABASES['default'] = os.environ.get(
+        'UNTRUSTED_DATABASE_URL',
+        'postgres://pupa:pupa@localhost/untrusted_opencivicdata'
+    )
     django.setup()
 
     if len(sys.argv) != 2:
