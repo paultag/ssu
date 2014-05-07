@@ -10,7 +10,7 @@ from pupa.scrape.popolo import Organization
 OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
 
 
-def people_to_pupa(stream, org):
+def people_to_pupa(stream, org, jurisdiction_id):
     for row in stream:
         # XXX: Validate the row better.
         name = row.get("Name", "").strip()
@@ -37,6 +37,7 @@ def people_to_pupa(stream, org):
 
         obj.add_source(url=OCD_SOURCE_URL)
         obj.validate()
+        obj.pre_save(jurisdiction_id)
 
         yield obj
 
@@ -55,7 +56,10 @@ def import_parsed_stream(stream, jurisdiction_id, organization_name):
     org.add_source(url=OCD_SOURCE_URL)
     # XXX: Re-add Jurisdiction ID
 
-    yield from people_to_pupa(stream, org)
+    yield from people_to_pupa(stream, org, jurisdiction_id)
+
+    org.pre_save(jurisdiction_id)
+    org.validate()
     yield org
 
 

@@ -1,6 +1,6 @@
 #
 
-from pupa.scrape.popolo import Organization, Person
+from pupa.scrape.popolo import Organization, Person, Post, Membership
 from ssu.parser import import_stream
 from contextlib import contextmanager
 import os
@@ -109,3 +109,18 @@ def test_bad_district_stream():
                 "raised by people_to_pupa given a blank district.")
         except ValueError as e:
             assert (str(e)) == "A district is required for each entry."
+
+
+def test_people_post_stream():
+    with load_resource("testdata.csv") as fd:
+        post_stream = icsv(Post, fd, jid, oname)
+        post = next(post_stream)
+        assert post.label == "Ward 20", "Bad district"
+
+
+def test_people_membership_stream():
+    with load_resource("testdata.csv") as fd:
+        membership_stream = icsv(Membership, fd, jid, oname)
+        membership = next(membership_stream)
+
+        assert membership.post_id == "district::Ward 20", "Bad Post relation"
