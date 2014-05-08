@@ -4,8 +4,6 @@ import os
 import sys
 
 import django
-import dj_database_url
-from django.conf import settings
 
 from ssu.parser import import_file_stream
 
