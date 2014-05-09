@@ -12,7 +12,7 @@ class SpreadsheetUpload(models.Model):
 class SpreadsheetPerson(models.Model):
     name = models.TextField()
     district = models.TextField()
-    spreadsheet = models.ForeignKey(SpreadsheetUpload)
+    spreadsheet = models.ForeignKey(SpreadsheetUpload, related_name='people')
     # HStore here.
 
     def as_dict(self):

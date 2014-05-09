@@ -81,7 +81,7 @@ def import_parsed_stream(stream, user):
                 e = SpreadsheetEmail(person=who, email=email)
                 e.save()
 
-        print(who.as_dict())
+    return upload
 
 
 def import_stream(stream, extension, user):

@@ -28,4 +28,7 @@ if __name__ == "__main__":
 
     _, fpath = sys.argv
     with import_file_stream(fpath, u) as stream:
-        print(stream)
+        print("Uploaded {} people. Record {}.".format(
+            stream.people.count(),
+            stream.id,
+        ))
