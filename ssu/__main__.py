@@ -13,22 +13,36 @@ from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
 
-def import_spreadsheet(stream):
-    pass
+def import_spreadsheet(fpath, user):
+    with import_file_stream(fpath, user) as stream:
+        print("{} - Uploaded {} people. Record {}.".format(
+            user.username,
+            stream.people.count(),
+            stream.id,
+        ))
 
 
 if __name__ == "__main__":
     django.setup()
 
-    if len(sys.argv) != 2:
-        print("Error: Need a csv file path to import")
-        sys.exit(1)
+    def _load(fpath):
+        u = User.objects.get(username='tag')
+        import_spreadsheet(fpath, u)
 
-    u = User.objects.get(username='tag')
+    def _migrate():
+        pass
 
-    _, fpath = sys.argv
-    with import_file_stream(fpath, u) as stream:
-        print("Uploaded {} people. Record {}.".format(
-            stream.people.count(),
-            stream.id,
-        ))
+    commands = {
+        "load": _load,
+        "migrate": _migrate,
+    }
+
+    def _help(*a):
+        print("Valid commands:", list(commands.keys()))
+
+    commands['help'] = _help
+
+    sys.argv.pop(0)
+    cmd = sys.argv.pop(0)
+
+    commands.get(cmd, _help)(*sys.argv)
