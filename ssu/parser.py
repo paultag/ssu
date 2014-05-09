@@ -1,6 +1,7 @@
 import csv
 from ssu.xlrd import xlrd_dict_reader
 from ssu.csv import csv_dict_reader
+from ssu.models import (SpreadsheetUpload, SpreadsheetPerson)
 
 from contextlib import contextmanager
 from pupa.scrape.helpers import Legislator
@@ -49,18 +50,12 @@ def people_to_pupa(stream, org, jurisdiction_id):
 
 
 def import_parsed_stream(stream, jurisdiction_id, organization_name):
-    org = Organization(
-        name=organization_name,
-        classification='legislature'
-    )  # , jurisdiction_id=jurisdiction_id)
-    org.add_source(url=OCD_SOURCE_URL)
-    # XXX: Re-add Jurisdiction ID
+    upload = SpreadsheetUpload()
 
-    yield from people_to_pupa(stream, org, jurisdiction_id)
+    for person in stream:
+        print(person)
 
-    org.pre_save(jurisdiction_id)
-    org.validate()
-    yield org
+    upload.save()
 
 
 def import_stream(stream, extension, name, jurisdiction):
