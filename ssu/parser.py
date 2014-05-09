@@ -76,10 +76,12 @@ def import_parsed_stream(stream, user):
                 p.save()
 
         for email in ["Phone 1", "Phone 2", "Phone 3"]:
-            email = person.get(phone)
+            email = person.get(email)
             if email:
                 e = SpreadsheetEmail(person=who, email=email)
                 e.save()
+
+        print(who.as_dict())
 
 
 def import_stream(stream, extension, user):
