@@ -1,7 +1,9 @@
 import csv
 from ssu.xlrd import xlrd_dict_reader
 from ssu.csv import csv_dict_reader
-from ssu.models import (SpreadsheetUpload, SpreadsheetPerson)
+from ssu.models import (SpreadsheetUpload, SpreadsheetPerson,
+                        SpreadsheetAddress, SpreadsheetPhone,
+                        SpreadsheetEmail)
 
 from contextlib import contextmanager
 from pupa.scrape.helpers import Legislator
@@ -49,26 +51,48 @@ def people_to_pupa(stream, org, jurisdiction_id):
         yield related
 
 
-def import_parsed_stream(stream, jurisdiction_id, organization_name):
-    upload = SpreadsheetUpload()
-
-    for person in stream:
-        print(person)
-
+def import_parsed_stream(stream, user):
+    upload = SpreadsheetUpload(user=user)
     upload.save()
 
+    for person in stream:
+        who = SpreadsheetPerson(
+            name=person['Name'],
+            spreadsheet=upload,
+            district=person['District'],
+        )
+        who.save()
 
-def import_stream(stream, extension, name, jurisdiction):
+        for address in ["Address 1", "Address 2", "Address 3"]:
+            where = person.get(address)
+            if where:
+                a = SpreadsheetAddress(person=who, address=where)
+                a.save()
+
+        for phone in ["Phone 1", "Phone 2", "Phone 3"]:
+            phone = person.get(phone)
+            if phone:
+                p = SpreadsheetPhone(person=who, phone=phone)
+                p.save()
+
+        for email in ["Phone 1", "Phone 2", "Phone 3"]:
+            email = person.get(phone)
+            if email:
+                e = SpreadsheetEmail(person=who, email=email)
+                e.save()
+
+
+def import_stream(stream, extension, user):
     reader = {"csv": csv_dict_reader,
               "xlsx": xlrd_dict_reader,
               "xls": xlrd_dict_reader}[extension]
 
-    return import_parsed_stream(reader(stream), name, jurisdiction)
+    return import_parsed_stream(reader(stream), user)
 
 
 @contextmanager
-def import_file_stream(fpath, name, jurisdiction):
+def import_file_stream(fpath, user):
     _, xtn = fpath.rsplit(".", 1)
 
     with open(fpath, 'br') as fd:
-        yield import_stream(fd, xtn, name, jurisdiction)
+        yield import_stream(fd, xtn, user)

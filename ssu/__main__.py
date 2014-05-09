@@ -4,6 +4,7 @@ import os
 import sys
 
 import django
+from django.contrib.auth.models import User
 
 from ssu.parser import import_file_stream
 from ssu.models import (SpreadsheetUpload, SpreadsheetPerson)
@@ -23,14 +24,8 @@ if __name__ == "__main__":
         print("Error: Need a csv file path to import")
         sys.exit(1)
 
+    u = User.objects.get(username='tag')
+
     _, fpath = sys.argv
-    with import_file_stream(
-        fpath,
-        "Test Jurisdiction",
-        "ocd-jurisdiction/country:xx/council"
-    ) as stream:
-        _do_import(
-            stream,
-            "Test Jurisdiction",
-            "ocd-jurisdiction/country:xx/council"
-        )
+    with import_file_stream(fpath, u) as stream:
+        print(stream)
