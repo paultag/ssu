@@ -22,6 +22,13 @@ def import_spreadsheet(fpath, user):
         ))
 
 
+
+def migrate_spreadsheet(transaction):
+    def _stream():
+        for person in transaction.people.all():
+            yield person.as_dict()
+
+
 if __name__ == "__main__":
     django.setup()
 
@@ -29,8 +36,9 @@ if __name__ == "__main__":
         u = User.objects.get(username='tag')
         import_spreadsheet(fpath, u)
 
-    def _migrate():
-        pass
+    def _migrate(transaction):
+        t = SpreadsheetUpload.objects.get(id=int(transaction))
+        migrate_spreadsheet(t)
 
     commands = {
         "load": _load,
