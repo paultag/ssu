@@ -7,6 +7,7 @@ from pupa.settings import *
 # ))
 # DATABASES['default'] = DATABASES['untrusted']
 
+
 INSTALLED_APPS = INSTALLED_APPS + (
     'django.contrib.contenttypes',
     'django.contrib.auth',
