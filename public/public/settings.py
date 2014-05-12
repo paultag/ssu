@@ -19,10 +19,18 @@ INSTALLED_APPS = (
     'ssu',
 )
 
+FILE_UPLOAD_HANDLERS = (
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+)
+
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+
+    # 'django.middleware.csrf.CsrfResponseMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -32,13 +40,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'public.urls'
 WSGI_APPLICATION = 'public.wsgi.application'
 
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+from pupa.settings import DATABASES
 
 STATIC_ROOT = os.path.join(os.path.dirname(__file__), '../..', 'collected_static')
 STATIC_URL = '/media/'
