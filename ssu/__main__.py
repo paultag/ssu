@@ -6,15 +6,18 @@ import sys
 import django
 from django.contrib.auth.models import User
 
-from ssu.parser import import_file_stream
+from ssu.parser import import_file_stream, people_to_pupa
+from ssu.importer import do_import
 from ssu.models import (SpreadsheetUpload, SpreadsheetPerson)
+
+from opencivicdata.models.jurisdiction import Jurisdiction as JurisdictionModel
 
 from pupa.scrape import (Jurisdiction, Person, Organization, Membership, Post)
 from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
 
-def import_spreadsheet(fpath, user):
-    with import_file_stream(fpath, user) as stream:
+def import_spreadsheet(fpath, user, jurisdiction):
+    with import_file_stream(fpath, user, jurisdiction) as stream:
         print("{} - Uploaded {} people. Record {}.".format(
             user.username,
             stream.people.count(),
@@ -22,23 +25,24 @@ def import_spreadsheet(fpath, user):
         ))
 
 
-
 def migrate_spreadsheet(transaction):
-    def _stream():
-        for person in transaction.people.all():
-            yield person.as_dict()
+    for person in transaction.people.all():
+        yield person.as_dict()
 
 
 if __name__ == "__main__":
     django.setup()
 
-    def _load(fpath):
+    def _load(fpath, jurisdiction):
+        jurisdiction = JurisdictionModel.objects.get(id=jurisdiction)
         u = User.objects.get(username='tag')
-        import_spreadsheet(fpath, u)
+        import_spreadsheet(fpath, u, jurisdiction)
 
     def _migrate(transaction):
         t = SpreadsheetUpload.objects.get(id=int(transaction))
-        migrate_spreadsheet(t)
+        stream = people_to_pupa(migrate_spreadsheet(t), t)
+        for x in stream:
+            print(x)
 
     commands = {
         "load": _load,
@@ -51,6 +55,9 @@ if __name__ == "__main__":
     commands['help'] = _help
 
     sys.argv.pop(0)
-    cmd = sys.argv.pop(0)
+    if sys.argv:
+        cmd = sys.argv.pop(0)
+    else:
+        cmd = "help"
 
     commands.get(cmd, _help)(*sys.argv)

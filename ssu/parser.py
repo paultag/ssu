@@ -13,7 +13,9 @@ from pupa.scrape.popolo import Organization
 OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
 
 
-def people_to_pupa(stream, org, jurisdiction_id):
+def people_to_pupa(stream, transaction):
+    org = Organization(name=transaction.jurisdiction.name)
+
     for row in stream:
         # XXX: Validate the row better.
         name = row.get("Name", "").strip()
@@ -40,7 +42,7 @@ def people_to_pupa(stream, org, jurisdiction_id):
 
         obj.add_source(url=OCD_SOURCE_URL)
         obj.validate()
-        obj.pre_save(jurisdiction_id)
+        obj.pre_save(transaction.jurisdiction.id)
 
         yield obj
 
@@ -51,8 +53,8 @@ def people_to_pupa(stream, org, jurisdiction_id):
         yield related
 
 
-def import_parsed_stream(stream, user):
-    upload = SpreadsheetUpload(user=user)
+def import_parsed_stream(stream, user, jurisdiction):
+    upload = SpreadsheetUpload(user=user, jurisdiction=jurisdiction)
     upload.save()
 
     for person in stream:
@@ -84,17 +86,17 @@ def import_parsed_stream(stream, user):
     return upload
 
 
-def import_stream(stream, extension, user):
+def import_stream(stream, extension, user, jurisdiction):
     reader = {"csv": csv_dict_reader,
               "xlsx": xlrd_dict_reader,
               "xls": xlrd_dict_reader}[extension]
 
-    return import_parsed_stream(reader(stream), user)
+    return import_parsed_stream(reader(stream), user, jurisdiction)
 
 
 @contextmanager
-def import_file_stream(fpath, user):
+def import_file_stream(fpath, user, jurisdiction):
     _, xtn = fpath.rsplit(".", 1)
 
     with open(fpath, 'br') as fd:
-        yield import_stream(fd, xtn, user)
+        yield import_stream(fd, xtn, user, jurisdiction)

@@ -3,7 +3,7 @@ from pupa.importers import (JurisdictionImporter, OrganizationImporter,
                             PersonImporter, PostImporter, MembershipImporter)
 
 
-def do_import(stream, org, jurisdiction_id):
+def do_import(stream, transaction):
     stream = list(stream)
 
     juris_importer = JurisdictionImporter(jurisdiction_id)
