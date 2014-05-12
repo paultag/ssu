@@ -5,6 +5,7 @@ from pupa.importers import (JurisdictionImporter, OrganizationImporter,
 
 def do_import(stream, transaction):
     stream = list(stream)
+    jurisdiction_id = transaction.jurisdiction.id
 
     juris_importer = JurisdictionImporter(jurisdiction_id)
     org_importer = OrganizationImporter(jurisdiction_id)

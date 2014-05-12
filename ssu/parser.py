@@ -14,7 +14,10 @@ OCD_SOURCE_URL = "http://opencivicdata.org/manual-data/source-notice"
 
 
 def people_to_pupa(stream, transaction):
-    org = Organization(name=transaction.jurisdiction.name)
+    org = Organization(
+        name=transaction.jurisdiction.name,
+        classification='legislature',
+    )
 
     for row in stream:
         # XXX: Validate the row better.
@@ -51,6 +54,7 @@ def people_to_pupa(stream, transaction):
 
     for related in org._related:
         yield related
+    yield org
 
 
 def import_parsed_stream(stream, user, jurisdiction):

@@ -41,8 +41,8 @@ if __name__ == "__main__":
     def _migrate(transaction):
         t = SpreadsheetUpload.objects.get(id=int(transaction))
         stream = people_to_pupa(migrate_spreadsheet(t), t)
-        for x in stream:
-            print(x)
+        report = do_import(stream, t)
+        print(report)
 
     commands = {
         "load": _load,
