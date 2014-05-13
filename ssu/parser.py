@@ -84,7 +84,7 @@ def import_parsed_stream(stream, user, jurisdiction):
                 p = SpreadsheetPhone(person=who, phone=phone)
                 p.save()
 
-        for email in ["Phone 1", "Phone 2", "Phone 3"]:
+        for email in ["Email 1", "Email 2", "Email 3"]:
             email = person.get(email)
             if email:
                 e = SpreadsheetEmail(person=who, email=email)

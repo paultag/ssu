@@ -5,6 +5,7 @@ from django.contrib import admin
 urlpatterns = patterns('',
     url(r'^$', 'public.views.home', name='home'),
     url(r'^upload/$', 'public.views.upload', name='upload'),
+    url(r'^manage/(?P<transaction>.*)/$', 'public.views.manage', name='manage'),
 
 
     url(r'^admin/', include(admin.site.urls)),
