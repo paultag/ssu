@@ -14,21 +14,18 @@ oname = "Foo City"
 def load_resource(name):
     with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
             "resources", name), 'rb') as fd:
-        yield fd
+        yield fd.read()
 
 
-def istream(test, xtn, *args, **kwargs):
-    args = list(args)
-    args.insert(1, xtn)
-
-    for el in import_stream(*args, **kwargs):
+def istream(test, xtn, stream, jurisdiction):
+    for el in import_stream(stream, xtn, None, jurisdiction):
         if isinstance(el, test):
             yield el
 
 
 def test_org_conversion():
     with load_resource("testdata.csv") as fd:
-        org_stream = istream(Organization, "csv", fd, jid, oname)
+        org_stream = istream(Organization, "csv", fd, jid)
         o = next(org_stream)
         assert o.name == oname
         # assert o.jurisdiction_id == jid
@@ -37,7 +34,7 @@ def test_org_conversion():
 
 def test_john_conversion():
     with load_resource("testdata.csv") as fd:
-        people_stream = istream(Person, "csv", fd, jid, oname)
+        people_stream = istream(Person, "csv", fd, jid)
         john = next(people_stream)
 
     obj = john.as_dict()
@@ -56,7 +53,7 @@ def test_john_conversion():
 
 def test_xls_john_conversion():
     with load_resource("testdata.xls") as fd:
-        people_stream = istream(Person, "xls", fd, jid, oname)
+        people_stream = istream(Person, "xls", fd, jid)
         john = next(people_stream)
 
     obj = john.as_dict()
@@ -70,7 +67,7 @@ def test_xls_john_conversion():
 
 def test_xlsx_john_conversion():
     with load_resource("testdata.xlsx") as fd:
-        people_stream = istream(Person, "xlsx", fd, jid, oname)
+        people_stream = istream(Person, "xlsx", fd, jid)
         john = next(people_stream)
 
     obj = john.as_dict()
@@ -84,7 +81,7 @@ def test_xlsx_john_conversion():
 
 def test_people_name_stream():
     with load_resource("testdata.csv") as fd:
-        people_stream = istream(Person, "csv", fd, jid, oname)
+        people_stream = istream(Person, "csv", fd, jid)
         with load_resource("testdata.csv") as fd:
             csv_stream = csv.DictReader((x.decode('utf-8') for x in fd))
 
@@ -94,7 +91,7 @@ def test_people_name_stream():
 
 def test_bad_people_stream():
     with load_resource("noname.csv") as fd:
-        people_stream = istream(Person, "csv", fd, jid, oname)
+        people_stream = istream(Person, "csv", fd, jid)
         good = next(people_stream)
 
         try:
@@ -106,7 +103,7 @@ def test_bad_people_stream():
 
 def test_bad_district_stream():
     with load_resource("nodistrict.csv") as fd:
-        people_stream = istream(Person, "csv", fd, jid, oname)
+        people_stream = istream(Person, "csv", fd, jid)
         good = next(people_stream)
 
         try:
@@ -118,13 +115,13 @@ def test_bad_district_stream():
 
 def test_people_post_stream():
     with load_resource("testdata.csv") as fd:
-        post_stream = istream(Post, "csv", fd, jid, oname)
+        post_stream = istream(Post, "csv", fd, jid)
         post = next(post_stream)
         assert post.label == "Ward 20", "Bad district"
 
 
 def test_people_membership_stream():
     with load_resource("testdata.csv") as fd:
-        membership_stream = istream(Membership, "csv", fd, jid, oname)
+        membership_stream = istream(Membership, "csv", fd, jid)
         membership = next(membership_stream)
         assert membership.post_id == "district::Ward 20", "Bad Post relation"
