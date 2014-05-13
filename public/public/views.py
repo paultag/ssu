@@ -1,7 +1,8 @@
 from django.shortcuts import render_to_response
 from django.views.decorators.http import require_http_methods
 
-from ssu.parser import import_stream
+from ssu.parser import import_stream, people_to_pupa
+from ssu.importer import do_import
 from ssu.models import SpreadsheetUpload
 from opencivicdata.models import Jurisdiction
 
@@ -35,4 +36,22 @@ def manage(request, transaction):
 
     return render_to_response("ssu/public/manage.html", {
         "transaction": transaction,
+    })
+
+
+@require_http_methods(["POST"])
+def migrate(request):
+    transaction_id = int(request.POST['transaction'])
+    transaction = SpreadsheetUpload.objects.get(id=transaction_id)
+
+    def migrate_spreadsheet(transaction):
+        for person in transaction.people.all():
+            yield person.as_dict()
+
+    stream = people_to_pupa(migrate_spreadsheet(transaction), transaction)
+    report = do_import(stream, transaction)
+
+    return render_to_response("ssu/public/migrate.html", {
+        "transaction": transaction,
+        "report": report,
     })
