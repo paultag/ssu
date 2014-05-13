@@ -17,8 +17,6 @@ def upload(request):
     _, xtn = sheet.name.rsplit(".", 1)
     jurisdiction = Jurisdiction.objects.get(id=request.POST['jurisdiction'])
 
-    print(sheet)
-
     transaction = import_stream(
         sheet.read(),
         xtn,
@@ -44,12 +42,23 @@ def migrate(request):
     transaction_id = int(request.POST['transaction'])
     transaction = SpreadsheetUpload.objects.get(id=transaction_id)
 
+    if transaction.approved_by:
+        return render_to_response("ssu/public/migrate_fail.html", {
+            "transaction": transaction,
+        })
+
+    approver = request.user
+    print(approver)
+
     def migrate_spreadsheet(transaction):
         for person in transaction.people.all():
             yield person.as_dict()
 
     stream = people_to_pupa(migrate_spreadsheet(transaction), transaction)
     report = do_import(stream, transaction)
+
+    transaction.approved_by = approver
+    transaction.save()
 
     return render_to_response("ssu/public/migrate.html", {
         "transaction": transaction,
