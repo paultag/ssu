@@ -4,6 +4,7 @@ from django.contrib import admin
 
 urlpatterns = patterns('',
     url(r'^$', 'public.views.home', name='home'),
+    url(r'^queue/$', 'public.views.queue', name='queue'),
 
     url(r'^upload/$', 'public.views.upload', name='upload'),
     url(r'^migrate/$', 'public.views.migrate', name='migrate'),

@@ -11,6 +11,14 @@ def home(request):
     return render_to_response("ssu/public/index.html", {})
 
 
+def queue(request):
+    return render_to_response("ssu/public/queue.html", {
+        "uploads": SpreadsheetUpload.objects.filter(
+            approved_by__isnull=True
+        ).all()
+    })
+
+
 @require_http_methods(["POST"])
 def upload(request):
     sheet = request.FILES['sheet']
