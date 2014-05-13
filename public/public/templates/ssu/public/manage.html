@@ -46,6 +46,8 @@ This data was uploaded by <b>{{transaction.user.username}}</b>.
 </table>
 {% endfor %}
 
+{% if transaction.approved_by == None %}
+
 <h1>Migrate People</h1>
 
 If all this looks OK, we can do a migration:
@@ -56,5 +58,11 @@ If all this looks OK, we can do a migration:
         {% csrf_token %}
     </form>
 
+{% else %}
 
+<h1>Already Migrated</h1>
+
+This was already migrated by {{transaction.approved_by.username}}
+
+{% endif %}
 {% endblock %}

@@ -48,7 +48,6 @@ def migrate(request):
         })
 
     approver = request.user
-    print(approver)
 
     def migrate_spreadsheet(transaction):
         for person in transaction.people.all():
