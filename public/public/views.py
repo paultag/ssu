@@ -1,4 +1,6 @@
 from django.shortcuts import render_to_response
+from django.views.decorators.http import require_http_methods
+
 from ssu.parser import import_stream
 from opencivicdata.models import Jurisdiction
 
@@ -7,10 +9,13 @@ def home(request):
     return render_to_response("ssu/public/index.html", {})
 
 
+@require_http_methods(["POST"])
 def upload(request):
     sheet = request.FILES['sheet']
     _, xtn = sheet.name.rsplit(".", 1)
     jurisdiction = Jurisdiction.objects.get(id=request.POST['jurisdiction'])
+
+    print(sheet)
 
     transaction = import_stream(
         sheet.read(),

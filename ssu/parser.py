@@ -62,6 +62,9 @@ def import_parsed_stream(stream, user, jurisdiction):
     upload.save()
 
     for person in stream:
+        if not person['District'] or not person['Name']:
+            raise ValueError("Bad district or name")
+
         who = SpreadsheetPerson(
             name=person['Name'],
             spreadsheet=upload,
